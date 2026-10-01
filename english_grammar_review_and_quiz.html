@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Grammar Masterclass: Review & Quiz</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        },
+                        accent: {
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .word-tile {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+        .word-tile:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.35s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+    <header class="sticky top-0 z-30 glass-panel border-b border-slate-800/80 px-4 lg:px-8 py-3.5 flex items-center justify-between">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('review')">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-accent-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
+                <i class="fa-solid fa-graduation-cap text-white text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                    English Grammar Pro
+                </h1>
+                <p class="text-xs text-slate-400 font-medium">High School Review & Assessment</p>
+            </div>
+        </div>
+
+        <!-- Quiz Progress Bar (Visible in Quiz View) -->
+        <div id="header-quiz-info" class="hidden flex-1 max-w-md mx-6">
+            <div class="flex justify-between items-center text-xs mb-1">
+                <span class="text-slate-400 font-medium">Progresso do Quiz</span>
+                <span id="quiz-progress-text" class="text-brand-500 font-bold">0 / 30</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden p-0.5">
+                <div id="quiz-progress-bar" class="bg-gradient-to-r from-brand-500 to-accent-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button id="toggle-sidebar-btn" onclick="toggleSidebar()" class="hidden p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition border border-slate-700 flex items-center gap-2 text-sm font-semibold">
+                <i class="fa-solid fa-list-ol text-brand-500"></i>
+                <span class="hidden sm:inline">Navegador</span>
+            </button>
+            <button onclick="switchView('review')" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white bg-slate-800/60 hover:bg-slate-800 transition border border-slate-700/60">
+                <i class="fa-solid fa-book-open mr-1.5 text-accent-500"></i> Revisão
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar Drawer (For Question Navigation) -->
+    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+    <aside id="question-sidebar" class="fixed top-0 right-0 h-full w-80 lg:w-96 glass-panel border-l border-slate-800 z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-6 flex flex-col">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+                <h3 class="font-bold text-slate-100 text-base">Mapa de Questões</h3>
+                <p class="text-xs text-slate-400">Navegue livremente pelas 30 questões</p>
+            </div>
+            <button onclick="toggleSidebar()" class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Legend -->
+        <div class="grid grid-cols-3 gap-2 py-4 border-b border-slate-800 text-xs">
+            <div class="flex items-center gap-1.5 text-slate-400">
+                <span class="w-3 h-3 rounded-full bg-slate-800 border border-slate-700"></span> Pendente
+            </div>
+            <div class="flex items-center gap-1.5 text-emerald-400">
+                <span class="w-3 h-3 rounded-full bg-emerald-500/20 border border-emerald-500"></span> Correta
+            </div>
+            <div class="flex items-center gap-1.5 text-rose-400">
+                <span class="w-3 h-3 rounded-full bg-rose-500/20 border border-rose-500"></span> Incorreta
+            </div>
+        </div>
+
+        <!-- Question Grid -->
+        <div class="flex-1 overflow-y-auto py-4">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Parte 1: Múltipla Escolha (1-15)</h4>
+            <div id="grid-mc" class="grid grid-cols-5 gap-2 mb-6"></div>
+
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Parte 2: Unscramble Words (16-30)</h4>
+            <div id="grid-scramble" class="grid grid-cols-5 gap-2"></div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-800">
+            <button onclick="finishQuiz()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-accent-600 hover:from-brand-500 hover:to-accent-500 font-bold text-sm text-white shadow-lg transition">
+                Finalizar e Ver Relatório
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col">
+
+        <!-- SECTION 1: CONTENT REVIEW -->
+        <section id="view-review" class="space-y-8 animate-fade-in">
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-900/60 via-slate-900 to-accent-900/40 p-8 border border-slate-800 shadow-2xl">
+                <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-400 text-xs font-semibold mb-4">
+                    <i class="fa-solid fa-sparkles"></i> Guia Completo do Aluno
+                </span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
+                    Revisão Gramatical Interativa
+                </h2>
+                <p class="text-slate-300 text-sm sm:text-base max-w-2xl leading-relaxed">
+                    Domine as diferenças fundamentais entre <strong class="text-brand-400">Simple Past</strong> e <strong class="text-brand-400">Present Perfect</strong>, além do uso correto dos marcadores temporais <strong class="text-accent-400">FOR</strong> e <strong class="text-accent-400">SINCE</strong> antes de iniciar o desafio de 30 questões.
+                </p>
+            </div>
+
+            <!-- Review Topic 1: Simple Past vs Present Perfect -->
+            <div class="glass-panel rounded-2xl p-6 sm:p-8 space-y-6">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-4">
+                    <div class="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center text-brand-400">
+                        <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">1. Simple Past vs. Present Perfect</h3>
+                        <p class="text-xs text-slate-400">Tempo acabado/específico vs. Tempo não especificado/com conexão com o presente</p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Simple Past Box -->
+                    <div class="glass-card rounded-xl p-5 border-l-4 border-l-amber-500 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-amber-400 text-base">Simple Past</h4>
+                            <span class="text-xs bg-amber-500/10 text-amber-300 px-2.5 py-0.5 rounded-full border border-amber-500/30">Finished Time</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Utilizado para ações <strong>totalmente concluídas no passado</strong> em um momento determinado/específico. A ação não possui ligação direta com o presente.
+                        </p>
+                        <div class="space-y-2 text-xs">
+                            <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+                                <span class="text-slate-400 block font-mono text-[11px] mb-1">ESTRUTURA:</span>
+                                <code class="text-amber-300 font-semibold">Subject + Past Verb (V2) / Auxiliary DID</code>
+                            </div>
+                            <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+                                <span class="text-slate-400 block font-mono text-[11px] mb-1">MARCADORES TEMPORAIS (Time Expressions):</span>
+                                <p class="text-slate-200">yesterday, last week, 2 years ago, in 2018, when I was a child.</p>
+                            </div>
+                        </div>
+                        <div class="pt-2 border-t border-slate-800/80">
+                            <p class="text-xs text-slate-300 italic">"I <strong class="text-amber-400">visited</strong> London in 2019."</p>
+                            <span class="text-[11px] text-slate-400">(Ação finalizada em ano específico no passado).</span>
+                        </div>
+                    </div>
+
+                    <!-- Present Perfect Box -->
+                    <div class="glass-card rounded-xl p-5 border-l-4 border-l-brand-500 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-brand-400 text-base">Present Perfect</h4>
+                            <span class="text-xs bg-brand-500/10 text-brand-300 px-2.5 py-0.5 rounded-full border border-brand-500/30">Unspecified / Ongoing</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Utilizado para <strong>experiências de vida</strong>, ações ocorridas em um <strong>tempo indefinido</strong> ou ações que <strong>começaram no passado e continuam</strong> no presente.
+                        </p>
+                        <div class="space-y-2 text-xs">
+                            <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+                                <span class="text-slate-400 block font-mono text-[11px] mb-1">ESTRUTURA:</span>
+                                <code class="text-brand-300 font-semibold">Subject + HAVE / HAS + Past Participle (V3)</code>
+                            </div>
+                            <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+                                <span class="text-slate-400 block font-mono text-[11px] mb-1">MARCADORES TEMPORAIS (Time Expressions):</span>
+                                <p class="text-slate-200">ever, never, already, yet, just, recently, for, since.</p>
+                            </div>
+                        </div>
+                        <div class="pt-2 border-t border-slate-800/80">
+                            <p class="text-xs text-slate-300 italic">"I <strong class="text-brand-400">have visited</strong> London twice."</p>
+                            <span class="text-[11px] text-slate-400">(Experiência acumulada; o momento exato não importa/não foi citado).</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Table -->
+                <div class="overflow-x-auto rounded-xl border border-slate-800">
+                    <table class="w-full text-xs text-left text-slate-300">
+                        <thead class="bg-slate-900/90 text-slate-200 uppercase font-semibold text-[11px] tracking-wider border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Característica</th>
+                                <th class="p-3 text-amber-400">Simple Past</th>
+                                <th class="p-3 text-brand-400">Present Perfect</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60 bg-slate-950/40">
+                            <tr>
+                                <td class="p-3 font-semibold text-slate-200">Tempo da Ação</td>
+                                <td class="p-3">Específico e encerrado.</td>
+                                <td class="p-3">Indefinido ou conectado ao presente.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-slate-200">Verbo Auxiliar nas Frases/Perguntas</td>
+                                <td class="p-3"><code class="text-amber-300">DID / DIDN'T</code></td>
+                                <td class="p-3"><code class="text-brand-300">HAVE / HAS / HAVEN'T / HASN'T</code></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-slate-200">Resultado Atual</td>
+                                <td class="p-3">O foco é quando aconteceu.</td>
+                                <td class="p-3">O foco é o resultado ou a experiência no presente.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Review Topic 2: For vs Since -->
+            <div class="glass-panel rounded-2xl p-6 sm:p-8 space-y-6">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-4">
+                    <div class="w-10 h-10 rounded-xl bg-accent-500/10 border border-accent-500/30 flex items-center justify-center text-accent-400">
+                        <i class="fa-solid fa-hourglass-half text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">2. Marcadores: FOR vs. SINCE</h3>
+                        <p class="text-xs text-slate-400">Duração de tempo vs. Ponto de partida inicial</p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- FOR Box -->
+                    <div class="glass-card rounded-xl p-5 border-l-4 border-l-emerald-500 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-emerald-400 text-base">FOR (Duração / Período)</h4>
+                            <span class="text-xs bg-emerald-500/10 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-500/30">Duration of Time</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Indica a <strong>extensão de um período de tempo</strong> (quanto tempo a ação durou ou vem durando). Responde à pergunta <em>"How long?"</em>.
+                        </p>
+                        <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 text-xs space-y-1">
+                            <span class="text-slate-400 font-mono text-[11px]">EXEMPLOS DE PERÍODOS:</span>
+                            <p class="text-slate-200">for 10 minutes, for 3 hours, for 5 days, for two months, for a decade, for ages.</p>
+                        </div>
+                        <div class="pt-2 border-t border-slate-800/80">
+                            <p class="text-xs text-slate-300 italic">"She has studied English <strong class="text-emerald-400">for five years</strong>."</p>
+                            <span class="text-[11px] text-slate-400">(Mostra a duração total: 5 anos).</span>
+                        </div>
+                    </div>
+
+                    <!-- SINCE Box -->
+                    <div class="glass-card rounded-xl p-5 border-l-4 border-l-purple-500 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-purple-400 text-base">SINCE (Ponto de Partida)</h4>
+                            <span class="text-xs bg-purple-500/10 text-purple-300 px-2.5 py-0.5 rounded-full border border-purple-500/30">Starting Point</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Indica o <strong>momento exato em que a ação teve início</strong> no passado e continua até hoje. Responde à pergunta <em>"Since when?"</em>.
+                        </p>
+                        <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 text-xs space-y-1">
+                            <span class="text-slate-400 font-mono text-[11px]">EXEMPLOS DE PONTOS DE INÍCIO:</span>
+                            <p class="text-slate-200">since 8 o'clock, since Monday, since 2015, since last Christmas, since I was young.</p>
+                        </div>
+                        <div class="pt-2 border-t border-slate-800/80">
+                            <p class="text-xs text-slate-300 italic">"She has studied English <strong class="text-purple-400">since 2019</strong>."</p>
+                            <span class="text-[11px] text-slate-400">(Mostra quando a ação começou no passado).</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Start Quiz Call To Action -->
+            <div class="flex flex-col items-center justify-center pt-4 pb-8 space-y-4">
+                <button onclick="startQuiz()" class="group relative inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-300 ease-in-out bg-gradient-to-r from-brand-600 via-brand-500 to-accent-600 rounded-2xl shadow-xl shadow-brand-500/25 hover:shadow-brand-500/40 hover:scale-[1.02] active:scale-[0.98]">
+                    <span>Iniciar Quiz (30 Questões)</span>
+                    <i class="fa-solid fa-arrow-right ml-3 transition-transform group-hover:translate-x-1"></i>
+                </button>
+                <p class="text-xs text-slate-400">Questões de nível intermediário/avançado • Múltipla escolha e Desembaralhar palavras</p>
+            </div>
+        </section>
+
+        <!-- SECTION 2: QUIZ VIEW -->
+        <section id="view-quiz" class="hidden flex-1 flex flex-col justify-between space-y-6 animate-fade-in">
+
+            <!-- Question Card Top Bar -->
+            <div class="glass-panel rounded-2xl p-4 sm:p-6 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span id="q-number-badge" class="px-3 py-1 rounded-xl bg-brand-500/20 text-brand-300 border border-brand-500/30 text-xs font-bold">
+                        Questão 01 de 30
+                    </span>
+                    <span id="q-type-badge" class="text-xs text-slate-400 font-medium hidden sm:inline-block">
+                        Multiple Choice
+                    </span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="navigateQuestion(-1)" id="btn-prev" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition text-sm disabled:opacity-30 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button onclick="navigateQuestion(1)" id="btn-next" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition text-sm disabled:opacity-30 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Question Container -->
+            <div id="question-card" class="glass-panel rounded-3xl p-6 sm:p-8 flex-1 flex flex-col justify-between space-y-6 relative overflow-hidden">
+                <!-- Content will be dynamically populated here -->
+            </div>
+
+            <!-- Quiz Navigation Footer -->
+            <div class="flex items-center justify-between pt-2">
+                <button onclick="toggleSidebar()" class="text-xs text-slate-400 hover:text-slate-200 transition flex items-center gap-2">
+                    <i class="fa-solid fa-grid-2"></i> Abrir Índice Completo
+                </button>
+                <button onclick="finishQuiz()" class="px-4 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:text-white transition">
+                    Concluir Quiz
+                </button>
+            </div>
+        </section>
+
+        <!-- SECTION 3: PERFORMANCE REPORT -->
+        <section id="view-results" class="hidden space-y-8 animate-fade-in">
+            <div class="glass-panel rounded-3xl p-6 sm:p-10 border border-slate-800 space-y-8">
+                
+                <!-- Report Header -->
+                <div class="text-center space-y-3">
+                    <div class="inline-flex p-3 rounded-2xl bg-brand-500/10 text-brand-400 border border-brand-500/20 mb-2">
+                        <i class="fa-solid fa-chart-pie text-2xl"></i>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Relatório de Desempenho</h2>
+                    <p class="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">Confira a sua pontuação detalhada, análise por tópico gramatical e sugestões de estudo personalizadas.</p>
+                </div>
+
+                <!-- Score Overview Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="glass-card rounded-2xl p-4 text-center border border-slate-800">
+                        <span class="text-xs text-slate-400 font-medium block mb-1">Acertos</span>
+                        <span id="res-correct" class="text-3xl font-extrabold text-emerald-400">0</span>
+                    </div>
+                    <div class="glass-card rounded-2xl p-4 text-center border border-slate-800">
+                        <span class="text-xs text-slate-400 font-medium block mb-1">Erros</span>
+                        <span id="res-incorrect" class="text-3xl font-extrabold text-rose-400">0</span>
+                    </div>
+                    <div class="glass-card rounded-2xl p-4 text-center border border-slate-800">
+                        <span class="text-xs text-slate-400 font-medium block mb-1">Aproveitamento</span>
+                        <span id="res-percentage" class="text-3xl font-extrabold text-brand-400">0%</span>
+                    </div>
+                    <div class="glass-card rounded-2xl p-4 text-center border border-slate-800">
+                        <span class="text-xs text-slate-400 font-medium block mb-1">Status Final</span>
+                        <span id="res-status" class="text-sm font-bold text-slate-200 block mt-2">Em Avaliação</span>
+                    </div>
+                </div>
+
+                <!-- Topic Breakdown -->
+                <div class="space-y-4">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-brand-400"></i> Desempenho por Tópico Gramatical
+                    </h3>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <!-- Breakdown 1 -->
+                        <div class="glass-card rounded-xl p-4 space-y-2 border border-slate-800">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="font-semibold text-slate-300">Simple Past vs Present Perfect</span>
+                                <span id="topic-t1-pct" class="font-bold text-brand-400">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-900 rounded-full h-2">
+                                <div id="topic-t1-bar" class="bg-brand-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Breakdown 2 -->
+                        <div class="glass-card rounded-xl p-4 space-y-2 border border-slate-800">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="font-semibold text-slate-300">Uso de FOR vs SINCE</span>
+                                <span id="topic-t2-pct" class="font-bold text-accent-400">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-900 rounded-full h-2">
+                                <div id="topic-t2-bar" class="bg-accent-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Breakdown 3 -->
+                        <div class="glass-card rounded-xl p-4 space-y-2 border border-slate-800">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="font-semibold text-slate-300">Estrutura de Frases (Unscramble)</span>
+                                <span id="topic-t3-pct" class="font-bold text-emerald-400">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-900 rounded-full h-2">
+                                <div id="topic-t3-bar" class="bg-emerald-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommendation Box -->
+                <div class="glass-card rounded-2xl p-6 border-l-4 border-l-brand-500 space-y-3">
+                    <h4 class="font-bold text-white text-base flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb text-amber-400"></i> Plano de Foco e Recomendação Pedagógica
+                    </h4>
+                    <p id="recommendation-text" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                        Analisando os seus resultados...
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                    <button onclick="restartQuiz()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm transition shadow-lg shadow-brand-500/20">
+                        <i class="fa-solid fa-rotate-right mr-2"></i> Refazer Quiz
+                    </button>
+                    <button onclick="switchView('review')" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm transition border border-slate-700">
+                        <i class="fa-solid fa-book-open mr-2"></i> Voltar para Revisão
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const questionsData = [
+            // --- MULTIPLE CHOICE QUESTIONS (1 - 15) ---
+            {
+                id: 1,
+                type: 'mc',
+                category: 'sp_pp',
+                question: "Choose the sentence that correctly expresses a completed past action at a specific time:",
+                options: [
+                    "I have visited my grandparents in Canada last summer.",
+                    "I visited my grandparents in Canada last summer.",
+                    "I visit my grandparents in Canada since last summer.",
+                    "I have been visiting my grandparents last summer.",
+                    "I was visited my grandparents in Canada last summer."
+                ],
+                correct: 1, // Option B
+                explanation: "Utiliza-se o **Simple Past** ('visited') porque a expressão temporal 'last summer' especifica um momento totalmente concluído no passado. O Present Perfect é incorreto com advérbios de tempo definido."
+            },
+            {
+                id: 2,
+                type: 'mc',
+                category: 'for_since',
+                question: "She has been working as a senior Software Engineer at this tech company _____ 2018.",
+                options: [
+                    "for",
+                    "during",
+                    "since",
+                    "until now",
+                    "from"
+                ],
+                correct: 2, // Option C
+                explanation: "Usa-se **SINCE** para indicar o ponto de partida exato de uma ação iniciada no passado que continua no presente (2018). 'For' seria usado apenas para duração total de tempo (ex: for 6 years)."
+            },
+            {
+                id: 3,
+                type: 'mc',
+                category: 'sp_pp',
+                question: "Which option best completes the dialog?\n\n— '_____ you ever _____ authentic Japanese sushi?'\n— 'Yes, I _____ some when I was in Tokyo two years ago.'",
+                options: [
+                    "Did / eat / ate",
+                    "Have / eaten / have eaten",
+                    "Have / eaten / ate",
+                    "Did / eaten / ate",
+                    "Have / ate / eaten"
+                ],
+                correct: 2, // Option C
+                explanation: "A primeira lacuna pede **Present Perfect** ('Have you ever eaten') para perguntar sobre experiência de vida geral. A resposta traz um momento determinado no passado ('when I was in Tokyo two years ago'), exigindo o **Simple Past** ('ate')."
+            },
+            {
+                id: 4,
+                type: 'mc',
+                category: 'for_since',
+                question: "Mark the sentence where 'for' is used CORRECTLY:",
+                options: [
+                    "They have lived in London for last Christmas.",
+                    "They have lived in London for I was a teenager.",
+                    "They have lived in London for three decades.",
+                    "They have lived in London for 2010.",
+                    "They have lived in London for yesterday morning."
+                ],
+                correct: 2, // Option C
+                explanation: "**FOR** exige um período ou duração de tempo acumulado ('three decades'). As outras opções apresentam pontos de partida temporais específicos, que exigem 'since'."
+            },
+            {
+                id: 5,
+                type: 'mc',
+                category: 'sp_pp',
+                question: "Analyze the two sentences:\n1) 'Lucas lost his key.'\n2) 'Lucas has lost his key.'\n\nWhat is the main difference in meaning?",
+                options: [
+                    "Sentence 1 implies he still doesn't have the key; Sentence 2 means he found it.",
+                    "Sentence 1 specifies a habit; Sentence 2 specifies a future intention.",
+                    "Sentence 1 emphasizes a past event where he may now have the key; Sentence 2 emphasizes he still cannot find it right now.",
+                    "There is no difference in meaning in English grammar.",
+                    "Sentence 1 is grammatically incorrect; only Sentence 2 is valid."
+                ],
+                correct: 2, // Option C
+                explanation: "No Present Perfect ('has lost'), a ação passada possui um resultado direto e relevante no presente (ele continua sem a chave agora). No Simple Past ('lost'), refere-se apenas a um fato que aconteceu no passado, sem garantia do estado atual."
+            },
+            {
+                id: 6,
+                type: 'mc',
+                category: 'for_since',
+                question: "The research team has been analyzing the climate data _____ several consecutive months without a break.",
+                options: [
+                    "since",
+                    "for",
+                    "ago",
+                    "in",
+                    "by"
+                ],
+                correct: 1, // Option B
+                explanation: "'Several consecutive months' representa um intervalo/duração de tempo (Amount of time), portanto exige a preposição **FOR**."
+            },
+            {
+                id: 7,
+                type: 'mc',
+                category: 'sp_pp',
+                question: "Identify the grammatically INCORRECT sentence:",
+                options: [
+                    "The famous novelist has written five bestseller books during her career.",
+                    "Did you see the new sci-fi movie yesterday evening?",
+                    "Shakespeare has written many world-famous plays in the 16th century.",
+                    "We haven't received the financial report yet.",
+                    "She studied French when she attended high school."
+                ],
+                correct: 2, // Option C
+                explanation: "A frase 'Shakespeare has written...' está INCORRETA porque Shakespeare já faleceu e o século XVI é um período concluído. Deve-se usar o Simple Past ('Shakespeare **wrote**...')."
+            },
+            {
+                id: 8,
+                type: 'mc',
+                category: 'sp_pp',
+                question: "Select the sentence that uses 'JUST' correctly in the Present Perfect structure:",
+                options: [
+                    "We have just finished the online examination.",
+                    "We just have finished the online examination.",
+                    "We have finished just the online examination yesterday.",
+                    "We finished just have the online examination.",
+                    "Just we have finished the online examination."
+                ],
+                correct: 0, // Option A
+                explanation: "O advérbio 'JUST' (usado para ações concluídas recentemente) deve ser posicionado **entre o verbo auxiliar (have/has) e o particípio passado (finished)**."
+            },
+            {
+                id: 9,
+                type: 'mc',
+                category: 'for_since',
+                question: "Complete the sentence appropriately:\n'Nobody has seen the principal _____ he left the conference room two hours ago.'",
+                options: [
+                    "for",
+                    "since",
+                    "during",
+                    "while",
+                    "about"
+                ],
+                correct: 1, // Option B
+                explanation: "'He left the conference room' é uma oração temporária que marca um **ponto específico de início** da ausência no passado, exigindo o marcador **SINCE**."
+            },
+            {
+                id: 10,
+                type: 'mc',
+                category: 'sp_pp',
+                question: "Fill in the gaps correctly:\n'By the time the police _____, the bank robbers _____ already escaped.'",
+                options: [
+                    "has arrived / had",
+                    "arrived / have",
+                    "arrived / had",
+                    "have arrived / have",
+                    "arrives / has"
+                ],
+                correct: 2, // Option C
+                explanation: "A estrutura exige narrativa no passado: 'arrived' (Simple Past para a ação da chegada) e 'had escaped' (Past Perfect para a ação anterior). Entre as opções com Present Perfect/Past contrastes, a única coerente em estrutura de narrativa do passado é 'arrived / had'."
+            },
+            {
+                id: 11,
+                type: 'mc',
+                category: 'sp_pp',
+                question: "Choose the option that uses the Present Perfect to express an unfinished period of time (up to now):",
+                options: [
+                    "I drank three cups of coffee yesterday.",
+                    "I have drunk three cups of coffee this morning (and it is still morning).",
+                    "I drank three cups of coffee when I woke up.",
+                    "I had drunk three cups of coffee last night.",
+                    "I was drinking three cups of coffee two hours ago."
+                ],
+                correct: 1, // Option B
+                explanation: "'This morning' (quando a manhã ainda não acabou no momento da fala) representa um tempo não-encerrado ('unfinished time'), justificando o uso do **Present Perfect** ('have drunk')."
+            },
+            {
+                id: 12,
+                type: 'mc',
+                category: 'for_since',
+                question: "Which pair correctly completes both sentences respectively?\n1. 'I haven't eaten any fast food _____ ages.'\n2. 'I haven't eaten any fast food _____ last month.'",
+                options: [
+                    "since / for",
+                    "for / since",
+                    "for / for",
+                    "since / since",
+                    "from / since"
+                ],
+                correct: 1, // Option B
+                explanation: "'Ages' (séculos/muito tempo) é uma duração -> **FOR**. 'Last month' é um ponto no tempo inicial -> **SINCE**."
+            },
+            {
+                id: 13,
+                type: 'mc',
+                category: 'sp_pp',
+                question: "— 'How long _____ you _____ your best friend?'\n— 'We _____ each other since primary school.'",
+                options: [
+                    "did / know / knew",
+                    "have / known / have known",
+                    "do / know / know",
+                    "have / knew / known",
+                    "did / known / have known"
+                ],
+                correct: 1, // Option B
+                explanation: "Para ações que iniciaram no passado e continuam no presente com verbos de estado (stative verbs como 'know'), utiliza-se o Present Perfect ('have you known' / 'have known')."
+            },
+            {
+                id: 14,
+                type: 'mc',
+                category: 'sp_pp',
+                question: "Select the sentence that has a correct past participle verb form:",
+                options: [
+                    "She has breaked her leg during the ski trip.",
+                    "She has broke her leg during the ski trip.",
+                    "She has broken her leg on the ski trip.",
+                    "She was broken her leg on the ski trip.",
+                    "She has break her leg on the ski trip."
+                ],
+                correct: 2, // Option C
+                explanation: "O particípio passado (V3) do verbo irregular 'break' é **broken** (break - broke - broken). A forma 'breaked' ou 'broke' no Present Perfect é incorreta."
+            },
+            {
+                id: 15,
+                type: 'mc',
+                category: 'for_since',
+                question: "Consider the temporal marker in: 'The museum has been closed _____ the structural inspection started.' What is the correct word?",
+                options: [
+                    "for",
+                    "until",
+                    "since",
+                    "ago",
+                    "ever"
+                ],
+                correct: 2, // Option C
+                explanation: "'The structural inspection started' é o evento gramatical que marca o início exato do fechamento do museu, exigindo **SINCE**."
+            },
+
+            // --- UNSCRAMBLE WORD QUESTIONS (16 - 30) ---
+            {
+                id: 16,
+                type: 'scramble',
+                category: 'sp_pp',
+                words: ["have", "known", "each", "other", "We", "for", "ten", "years."],
+                target: "We have known each other for ten years.",
+                explanation: "Estrutura do Present Perfect: Sujeito (We) + auxiliar (have) + particípio (known) + complemento (each other) + marcador (for ten years)."
+            },
+            {
+                id: 17,
+                type: 'scramble',
+                category: 'sp_pp',
+                words: ["visited", "They", "Paris", "last", "summer.", "never", "had"],
+                words: ["They", "visited", "Paris", "three", "years", "ago."],
+                target: "They visited Paris three years ago.",
+                explanation: "Ação concluída em momento definido no passado exige Simple Past: Sujeito (They) + verbo no passado (visited) + objeto (Paris) + tempo (three years ago)."
+            },
+            {
+                id: 18,
+                type: 'scramble',
+                category: 'for_since',
+                words: ["She", "has", "lived", "since", "in", "Berlin", "2015."],
+                target: "She has lived in Berlin since 2015.",
+                explanation: "Ordem correta: Sujeito (She) + Present Perfect (has lived) + local (in Berlin) + ponto de partida (since 2015)."
+            },
+            {
+                id: 19,
+                type: 'scramble',
+                category: 'sp_pp',
+                words: ["Have", "finished", "your", "homework", "you", "yet?"],
+                target: "Have you finished your homework yet?",
+                explanation: "Pergunta no Present Perfect: Auxiliar (Have) + sujeito (you) + particípio (finished) + objeto (your homework) + advérbio final (yet?)."
+            },
+            {
+                id: 20,
+                type: 'scramble',
+                category: 'sp_pp',
+                words: ["bought", "He", "a", "new", "car", "yesterday."],
+                target: "He bought a new car yesterday.",
+                explanation: "Simple Past afirmativo: Sujeito (He) + verbo no passado (bought) + objeto (a new car) + marcador temporal (yesterday)."
+            },
+            {
+                id: 21,
+                type: 'scramble',
+                category: 'for_since',
+                words: ["working", "been", "here", "I", "have", "for", "months.", "six"],
+                target: "I have been working here for six months.",
+                explanation: "Present Perfect Continuous: Sujeito (I) + have been working + advérbio (here) + duração (for six months)."
+            },
+            {
+                id: 22,
+                type: 'scramble',
+                category: 'sp_pp',
+                words: ["already", "The", "train", "has", "left", "the", "station."],
+                target: "The train has already left the station.",
+                explanation: "O advérbio 'already' fica posicionado entre o auxiliar 'has' e o particípio principal 'left'."
+            },
+            {
+                id: 23,
+                type: 'scramble',
+                category: 'sp_pp',
+                words: ["did", "Where", "you", "go", "on", "vacation?"],
+                target: "Where did you go on vacation?",
+                explanation: "Pergunta no Simple Past: Pronome interrogativo (Where) + auxiliar (did) + sujeito (you) + verbo base (go) + complemento."
+            },
+            {
+                id: 24,
+                type: 'scramble',
+                category: 'for_since',
+                words: ["hasn't", "It", "rained", "since", "last", "month."],
+                target: "It hasn't rained since last month.",
+                explanation: "Frase negativa: Sujeito (It) + hasn't + particípio (rained) + marcador de ponto inicial (since last month)."
+            },
+            {
+                id: 25,
+                type: 'scramble',
+                category: 'sp_pp',
+                words: ["never", "I", "have", "seen", "such", "a", "movie."],
+                target: "I have never seen such a movie.",
+                explanation: "Advérbio de frequência 'never' inserido no Present Perfect: Sujeito + have + never + particípio (seen) + objeto."
+            },
+            {
+                id: 26,
+                type: 'scramble',
+                category: 'sp_pp',
+                words: ["lost", "Keys", "her", "she", "an", "hour", "ago."],
+                words: ["She", "lost", "her", "keys", "an", "hour", "ago."],
+                target: "She lost her keys an hour ago.",
+                explanation: "Simple Past com 'ago': Sujeito (She) + verbo passado (lost) + objeto (her keys) + indicador (an hour ago)."
+            },
+            {
+                id: 27,
+                type: 'scramble',
+                category: 'for_since',
+                words: ["studied", "We", "have", "together", "for", "hours.", "three"],
+                target: "We have studied together for three hours.",
+                explanation: "Present Perfect com indicação de duração: Sujeito (We) + have studied + advérbio (together) + for three hours."
+            },
+            {
+                id: 28,
+                type: 'scramble',
+                category: 'sp_pp',
+                words: ["didn't", "the", "They", "email", "receive", "yesterday."],
+                target: "They didn't receive the email yesterday.",
+                explanation: "Negativa no Simple Past: Sujeito (They) + didn't + verbo no infinitivo (receive) + objeto + tempo (yesterday)."
+            },
+            {
+                id: 29,
+                type: 'scramble',
+                category: 'sp_pp',
+                words: ["has", "Doctor", "just", "arrived.", "The"],
+                target: "The Doctor has just arrived.",
+                explanation: "Ação recém-concluída: Sujeito (The Doctor) + auxiliar (has) + just + particípio (arrived)."
+            },
+            {
+                id: 30,
+                type: 'scramble',
+                category: 'for_since',
+                words: ["been", "has", "He", "sick", "since", "Monday."],
+                target: "He has been sick since Monday.",
+                explanation: "Verbo de estado no Present Perfect: Sujeito (He) + has been + adjetivo (sick) + marcador inicial (since Monday)."
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let userAnswers = {}; // Stores { questionId: { answered: true, isCorrect: bool, selected: value } }
+        let currentScrambleSelection = []; // Stores array of selected words for active scramble question
+
+        function switchView(viewName) {
+            document.getElementById('view-review').classList.add('hidden');
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-results').classList.add('hidden');
+
+            const quizInfo = document.getElementById('header-quiz-info');
+            const sidebarBtn = document.getElementById('toggle-sidebar-btn');
+
+            if (viewName === 'review') {
+                document.getElementById('view-review').classList.remove('hidden');
+                quizInfo.classList.add('hidden');
+                sidebarBtn.classList.add('hidden');
+            } else if (viewName === 'quiz') {
+                document.getElementById('view-quiz').classList.remove('hidden');
+                quizInfo.classList.remove('hidden');
+                sidebarBtn.classList.remove('hidden');
+                renderQuestion();
+                updateProgressBar();
+            } else if (viewName === 'results') {
+                document.getElementById('view-results').classList.remove('hidden');
+                quizInfo.classList.add('hidden');
+                sidebarBtn.classList.add('hidden');
+                calculateAndRenderResults();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function startQuiz() {
+            currentQuestionIdx = 0;
+            buildSidebarGrid();
+            switchView('quiz');
+        }
+
+        function restartQuiz() {
+            userAnswers = {};
+            currentQuestionIdx = 0;
+            currentScrambleSelection = [];
+            buildSidebarGrid();
+            switchView('quiz');
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('question-sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            
+            if (sidebar.classList.contains('translate-x-full')) {
+                sidebar.classList.remove('translate-x-full');
+                backdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
+
+        function buildSidebarGrid() {
+            const mcGrid = document.getElementById('grid-mc');
+            const scrambleGrid = document.getElementById('grid-scramble');
+            
+            mcGrid.innerHTML = '';
+            scrambleGrid.innerHTML = '';
+
+            questionsData.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `sidebar-q-${idx}`;
+                btn.innerText = idx + 1;
+                btn.onclick = () => {
+                    currentQuestionIdx = idx;
+                    renderQuestion();
+                    toggleSidebar();
+                };
+
+                // Styling logic
+                let statusClasses = "bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700";
+                if (userAnswers[q.id]) {
+                    if (userAnswers[q.id].isCorrect) {
+                        statusClasses = "bg-emerald-500/20 text-emerald-400 border-emerald-500/50 font-bold";
+                    } else {
+                        statusClasses = "bg-rose-500/20 text-rose-400 border-rose-500/50 font-bold";
+                    }
+                }
+
+                if (idx === currentQuestionIdx) {
+                    statusClasses += " ring-2 ring-brand-500 ring-offset-2 ring-offset-slate-950";
+                }
+
+                btn.className = `h-9 w-full rounded-lg border text-xs flex items-center justify-center transition-all ${statusClasses}`;
+
+                if (idx < 15) {
+                    mcGrid.appendChild(btn);
+                } else {
+                    scrambleGrid.appendChild(btn);
+                }
+            });
+        }
+
+        function updateSidebarGridState() {
+            questionsData.forEach((q, idx) => {
+                const btn = document.getElementById(`sidebar-q-${idx}`);
+                if (!btn) return;
+
+                let statusClasses = "bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700";
+                if (userAnswers[q.id]) {
+                    if (userAnswers[q.id].isCorrect) {
+                        statusClasses = "bg-emerald-500/20 text-emerald-400 border-emerald-500/50 font-bold";
+                    } else {
+                        statusClasses = "bg-rose-500/20 text-rose-400 border-rose-500/50 font-bold";
+                    }
+                }
+
+                if (idx === currentQuestionIdx) {
+                    statusClasses += " ring-2 ring-brand-500 ring-offset-2 ring-offset-slate-950";
+                }
+
+                btn.className = `h-9 w-full rounded-lg border text-xs flex items-center justify-center transition-all ${statusClasses}`;
+            });
+        }
+
+        function updateProgressBar() {
+            const answeredCount = Object.keys(userAnswers).length;
+            const percentage = (answeredCount / questionsData.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${percentage}%`;
+            document.getElementById('quiz-progress-text').innerText = `${answeredCount} / ${questionsData.length}`;
+        }
+
+        function navigateQuestion(step) {
+            const newIdx = currentQuestionIdx + step;
+            if (newIdx >= 0 && newIdx < questionsData.length) {
+                currentQuestionIdx = newIdx;
+                renderQuestion();
+            }
+        }
+
+        function renderQuestion() {
+            const q = questionsData[currentQuestionIdx];
+            const container = document.getElementById('question-card');
+            
+            // Header Info
+            document.getElementById('q-number-badge').innerText = `Questão ${currentQuestionIdx + 1} de 30`;
+            document.getElementById('q-type-badge').innerText = q.type === 'mc' ? 'Múltipla Escolha' : 'Desembaralhar Palavras';
+
+            // Nav buttons state
+            document.getElementById('btn-prev').disabled = currentQuestionIdx === 0;
+            document.getElementById('btn-next').disabled = currentQuestionIdx === questionsData.length - 1;
+
+            updateSidebarGridState();
+
+            if (q.type === 'mc') {
+                renderMultipleChoice(q, container);
+            } else {
+                renderScramble(q, container);
+            }
+        }
+
+        /* Multiple Choice Renderer */
+        function renderMultipleChoice(q, container) {
+            const answerState = userAnswers[q.id];
+            const optionLetters = ['A', 'B', 'C', 'D', 'E'];
+
+            let optionsHTML = '';
+            q.options.forEach((opt, idx) => {
+                let btnStyle = "bg-slate-900/80 border-slate-800 text-slate-200 hover:border-brand-500/50 hover:bg-slate-800/80";
+                let badgeStyle = "bg-slate-800 text-slate-400";
+                let iconHTML = '';
+
+                if (answerState) {
+                    if (idx === q.correct) {
+                        // Correct option style
+                        btnStyle = "bg-emerald-500/10 border-emerald-500 text-emerald-300 font-semibold";
+                        badgeStyle = "bg-emerald-500 text-slate-950 font-bold";
+                        iconHTML = '<i class="fa-solid fa-circle-check text-emerald-400 text-lg ml-auto"></i>';
+                    } else if (answerState.selected === idx && !answerState.isCorrect) {
+                        // Wrong selected option style
+                        btnStyle = "bg-rose-500/10 border-rose-500 text-rose-300 font-semibold";
+                        badgeStyle = "bg-rose-500 text-white font-bold";
+                        iconHTML = '<i class="fa-solid fa-circle-xmark text-rose-400 text-lg ml-auto"></i>';
+                    } else {
+                        btnStyle = "bg-slate-900/40 border-slate-800/40 text-slate-500 opacity-60";
+                    }
+                }
+
+                optionsHTML += `
+                    <button 
+                        onclick="handleMCAnswer(${q.id}, ${idx})"
+                        ${answerState ? 'disabled' : ''}
+                        class="w-full text-left p-4 rounded-2xl border transition-all duration-200 flex items-center gap-3.5 group ${btnStyle}">
+                        <span class="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold transition-all ${badgeStyle}">
+                            ${optionLetters[idx]}
+                        </span>
+                        <span class="text-xs sm:text-sm flex-1 leading-relaxed">${opt}</span>
+                        ${iconHTML}
+                    </button>
+                `;
+            });
+
+            let feedbackHTML = '';
+            if (answerState) {
+                const isCorrect = answerState.isCorrect;
+                feedbackHTML = `
+                    <div class="mt-6 p-5 rounded-2xl border ${isCorrect ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-rose-500/10 border-rose-500/30'} space-y-2 animate-fade-in">
+                        <div class="flex items-center gap-2 font-bold text-sm ${isCorrect ? 'text-emerald-400' : 'text-rose-400'}">
+                            <i class="fa-solid ${isCorrect ? 'fa-circle-check' : 'fa-triangle-exclamation'}"></i>
+                            ${isCorrect ? 'Resposta Correta!' : 'Resposta Incorreta! Justificativa:'}
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">${q.explanation}</p>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = `
+                <div class="space-y-6">
+                    <div class="space-y-2">
+                        <span class="text-[11px] font-bold text-brand-400 uppercase tracking-wider">Pergunta</span>
+                        <h3 class="text-base sm:text-lg font-bold text-white leading-snug">${q.question.replace(/\n/g, '<br>')}</h3>
+                    </div>
+                    <div class="space-y-3">
+                        ${optionsHTML}
+                    </div>
+                    ${feedbackHTML}
+                </div>
+            `;
+        }
+
+        function handleMCAnswer(qId, selectedIdx) {
+            const q = questionsData.find(item => item.id === qId);
+            const isCorrect = selectedIdx === q.correct;
+
+            userAnswers[qId] = {
+                answered: true,
+                isCorrect: isCorrect,
+                selected: selectedIdx
+            };
+
+            updateProgressBar();
+            renderQuestion();
+        }
+
+        /* Scramble Words Renderer */
+        function renderScramble(q, container) {
+            const answerState = userAnswers[q.id];
+
+            // If not answered yet, ensure initial pool of available words is initialized
+            if (!answerState) {
+                if (!currentScrambleSelection || currentScrambleSelection.qId !== q.id) {
+                    currentScrambleSelection = {
+                        qId: q.id,
+                        selected: [],
+                        pool: [...q.words].sort(() => Math.random() - 0.5) // Shuffle initially
+                    };
+                }
+            }
+
+            const state = currentScrambleSelection;
+
+            // Selected Words HTML
+            let constructedSentenceHTML = '';
+            if (answerState) {
+                // If already submitted
+                constructedSentenceHTML = answerState.constructedWords.map(w => `
+                    <span class="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs sm:text-sm font-semibold text-white">
+                        ${w}
+                    </span>
+                `).join('');
+            } else {
+                constructedSentenceHTML = state.selected.map((w, idx) => `
+                    <button 
+                        onclick="unselectWord(${idx})"
+                        class="word-tile px-3.5 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-accent-600 text-white font-semibold text-xs sm:text-sm shadow-md hover:opacity-90 flex items-center gap-1.5">
+                        ${w} <i class="fa-solid fa-xmark text-[10px] opacity-70"></i>
+                    </button>
+                `).join('');
+            }
+
+            // Word Pool HTML
+            let poolHTML = '';
+            if (!answerState) {
+                poolHTML = state.pool.map((w, idx) => `
+                    <button 
+                        onclick="selectWord(${idx})"
+                        class="word-tile px-3.5 py-2 rounded-xl bg-slate-800/90 border border-slate-700 text-slate-200 hover:border-brand-500 font-semibold text-xs sm:text-sm hover:text-white transition">
+                        ${w}
+                    </button>
+                `).join('');
+            }
+
+            let feedbackHTML = '';
+            if (answerState) {
+                const isCorrect = answerState.isCorrect;
+                feedbackHTML = `
+                    <div class="mt-6 p-5 rounded-2xl border ${isCorrect ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-rose-500/10 border-rose-500/30'} space-y-2 animate-fade-in">
+                        <div class="flex items-center gap-2 font-bold text-sm ${isCorrect ? 'text-emerald-400' : 'text-rose-400'}">
+                            <i class="fa-solid ${isCorrect ? 'fa-circle-check' : 'fa-triangle-exclamation'}"></i>
+                            ${isCorrect ? 'Frase Perfeita!' : 'Estrutura Correta:'}
+                        </div>
+                        <p class="text-sm font-bold text-white">${q.target}</p>
+                        <p class="text-xs text-slate-300 leading-relaxed pt-1 border-t border-slate-800/80">${q.explanation}</p>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = `
+                <div class="space-y-6">
+                    <div class="space-y-1">
+                        <span class="text-[11px] font-bold text-accent-400 uppercase tracking-wider">Instrução</span>
+                        <h3 class="text-base sm:text-lg font-bold text-white">Ordene as palavras abaixo para formar a frase gramaticalmente correta:</h3>
+                    </div>
+
+                    <!-- Target Construction Area -->
+                    <div class="space-y-2">
+                        <span class="text-xs text-slate-400">Sua construção:</span>
+                        <div class="min-h-[70px] p-4 rounded-2xl bg-slate-950/80 border-2 border-dashed border-slate-800 flex flex-wrap gap-2 items-center">
+                            ${constructedSentenceHTML || '<span class="text-xs text-slate-500 italic">Clique nas palavras abaixo para construir a frase...</span>'}
+                        </div>
+                    </div>
+
+                    <!-- Word Bank -->
+                    ${!answerState ? `
+                        <div class="space-y-2">
+                            <span class="text-xs text-slate-400">Banco de palavras:</span>
+                            <div class="flex flex-wrap gap-2">
+                                ${poolHTML}
+                            </div>
+                        </div>
+
+                        <div class="pt-4 flex justify-end gap-3">
+                            <button onclick="resetScramble()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 border border-slate-700 transition">
+                                Limpar
+                            </button>
+                            <button onclick="checkScrambleAnswer(${q.id})" ${state.selected.length === 0 ? 'disabled' : ''} class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold transition shadow-lg shadow-brand-500/20">
+                                Verificar Resposta
+                            </button>
+                        </div>
+                    ` : ''}
+
+                    ${feedbackHTML}
+                </div>
+            `;
+        }
+
+        function selectWord(poolIdx) {
+            if (!currentScrambleSelection) return;
+            const word = currentScrambleSelection.pool.splice(poolIdx, 1)[0];
+            currentScrambleSelection.selected.push(word);
+            renderQuestion();
+        }
+
+        function unselectWord(selectedIdx) {
+            if (!currentScrambleSelection) return;
+            const word = currentScrambleSelection.selected.splice(selectedIdx, 1)[0];
+            currentScrambleSelection.pool.push(word);
+            renderQuestion();
+        }
+
+        function resetScramble() {
+            const q = questionsData[currentQuestionIdx];
+            currentScrambleSelection = {
+                qId: q.id,
+                selected: [],
+                pool: [...q.words].sort(() => Math.random() - 0.5)
+            };
+            renderQuestion();
+        }
+
+        function checkScrambleAnswer(qId) {
+            const q = questionsData.find(item => item.id === qId);
+            const userSentence = currentScrambleSelection.selected.join(' ').trim();
+            const targetSentence = q.target.trim();
+
+            const isCorrect = userSentence.toLowerCase() === targetSentence.toLowerCase();
+
+            userAnswers[qId] = {
+                answered: true,
+                isCorrect: isCorrect,
+                constructedWords: [...currentScrambleSelection.selected]
+            };
+
+            updateProgressBar();
+            renderQuestion();
+        }
+
+        function finishQuiz() {
+            const total = questionsData.length;
+            const answered = Object.keys(userAnswers).length;
+
+            if (answered < total) {
+                const confirmFinish = window.confirm(`Você respondeu ${answered} de ${total} questões. Deseja realmente finalizar o quiz agora?`);
+                if (!confirmFinish) return;
+            }
+
+            switchView('results');
+        }
+
+        function calculateAndRenderResults() {
+            let correctCount = 0;
+            let topicStats = {
+                sp_pp: { correct: 0, total: 0 },
+                for_since: { correct: 0, total: 0 },
+                scramble: { correct: 0, total: 0 }
+            };
+
+            questionsData.forEach(q => {
+                const ans = userAnswers[q.id];
+                const category = q.type === 'scramble' ? 'scramble' : q.category;
+                
+                if (topicStats[category]) {
+                    topicStats[category].total++;
+                }
+
+                if (ans && ans.isCorrect) {
+                    correctCount++;
+                    if (topicStats[category]) {
+                        topicStats[category].correct++;
+                    }
+                }
+            });
+
+            const total = questionsData.length;
+            const incorrectCount = total - correctCount;
+            const percentage = Math.round((correctCount / total) * 100);
+
+            // Update Header Stats
+            document.getElementById('res-correct').innerText = correctCount;
+            document.getElementById('res-incorrect').innerText = incorrectCount;
+            document.getElementById('res-percentage').innerText = `${percentage}%`;
+
+            const statusEl = document.getElementById('res-status');
+            if (percentage >= 85) {
+                statusEl.innerText = "Excelente (Avançado)";
+                statusEl.className = "text-sm font-bold text-emerald-400 block mt-2";
+            } else if (percentage >= 65) {
+                statusEl.innerText = "Bom (Intermediário)";
+                statusEl.className = "text-sm font-bold text-brand-400 block mt-2";
+            } else {
+                statusEl.innerText = "Necessita Revisão";
+                statusEl.className = "text-sm font-bold text-rose-400 block mt-2";
+            }
+
+            // Update Topic Bars
+            const spPpPct = topicStats.sp_pp.total > 0 ? Math.round((topicStats.sp_pp.correct / topicStats.sp_pp.total) * 100) : 0;
+            const forSincePct = topicStats.for_since.total > 0 ? Math.round((topicStats.for_since.correct / topicStats.for_since.total) * 100) : 0;
+            const scramblePct = topicStats.scramble.total > 0 ? Math.round((topicStats.scramble.correct / topicStats.scramble.total) * 100) : 0;
+
+            document.getElementById('topic-t1-pct').innerText = `${spPpPct}%`;
+            document.getElementById('topic-t1-bar').style.width = `${spPpPct}%`;
+
+            document.getElementById('topic-t2-pct').innerText = `${forSincePct}%`;
+            document.getElementById('topic-t2-bar').style.width = `${forSincePct}%`;
+
+            document.getElementById('topic-t3-pct').innerText = `${scramblePct}%`;
+            document.getElementById('topic-t3-bar').style.width = `${scramblePct}%`;
+
+            // Dynamic Recommendation Engine
+            const recEl = document.getElementById('recommendation-text');
+            let recommendations = [];
+
+            if (spPpPct < 70) {
+                recommendations.push("<strong>Simple Past vs. Present Perfect:</strong> Concentre-se em identificar marcadores temporais de tempo encerrado (ex: <em>yesterday, ago, last year</em>) que exigem obrigatoriamente o Simple Past, em oposição a experiências sem tempo definido.");
+            }
+            if (forSincePct < 70) {
+                recommendations.push("<strong>For vs. Since:</strong> Reorganize a regra prática: use <em>FOR</em> para períodos acumulados de tempo (horas, anos, dias) e <em>SINCE</em> exclusivamente para o ponto exato de início de uma ação.");
+            }
+            if (scramblePct < 70) {
+                recommendations.push("<strong>Estruturação e Sintaxe:</strong> Treine a posição dos advérbios no Present Perfect (ex: <em>already, just, never</em> sempre colocados entre o auxiliar 'have/has' e o particípio passado).");
+            }
+
+            if (recommendations.length === 0) {
+                recEl.innerHTML = "🎉 <strong>Parabéns!</strong> Você demonstrou domínio avançado nos conceitos gramaticais testados. Continue praticando a leitura e escuta de textos autênticos em inglês para manter a fluência e precisão conceitual.";
+            } else {
+                recEl.innerHTML = "Com base nas suas respostas, recomendamos foco prioritário nos seguintes pontos:<br><br>• " + recommendations.join("<br><br>• ");
+            }
+        }
+
+        // Initialize App on window load
+        window.onload = function() {
+            buildSidebarGrid();
+        };
+    </script>
+</body>
+</html>
